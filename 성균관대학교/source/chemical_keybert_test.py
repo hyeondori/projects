@@ -11,9 +11,27 @@ from tqdm import tqdm
 # import re
 # from collections import Counter
 from keybert import KeyBERT
+from keybert.backend import BaseEmbedder
+from sentence_transformers import SentenceTransformer
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # import os
 # import time
+
+class CustomEmbedder(BaseEmbedder):
+    def __init__(self, embedding_model):
+        super().__init__()
+        self.embedding_model = embedding_model
+
+        # all available CUDA devices will be used
+        self.pool = self.embedding_model.start_multi_process_pool()
+
+    def embed(self, documents, verbose=False):
+
+        # Run encode() on multiple GPUs
+        embeddings = self.embedding_model.encode_multi_process(documents, 
+                                                               self.pool)
+        return embeddings
+
 
 # -------------------------------------------------------------------------------- NOTEBOOK-CELL: CODE
 df = pd.read_csv('/data/hyeondori/chemicel_eng_filtered.csv', encoding='utf-8')
@@ -28,7 +46,10 @@ df['works_abstract'] = df['works_abstract'].str.replace('(sub|sup|pm|abstract|Ab
 df['works_abstract'] = df['works_abstract'].replace('(<|>|:)', '', regex = True)
 
 # -------------------------------------------------------------------------------- NOTEBOOK-CELL: CODE
-kw_model = KeyBERT()
+# Create custom backend and pass it to KeyBERT
+model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
+custom_embedder = CustomEmbedder(embedding_model=model)
+kw_model = KeyBERT(model=custom_embedder)
 
 # -------------------------------------------------------------------------------- NOTEBOOK-CELL: CODE
 result = pd.DataFrame(columns=['works_id', 'works_title', 'works_publication_year', 'works_abstract', 'keyword', 'score'])
