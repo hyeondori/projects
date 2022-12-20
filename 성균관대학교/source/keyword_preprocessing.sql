@@ -34,5 +34,5 @@ SELECT keyword AS keyword,
 				 GROUP BY keyword, works_publication_year) BASE_COUNT
 		) BASE_COUNT_PIVOT
  GROUP BY keyword
-HAVING tendency > 0																												-- 경향성 0 초과
-   AND scale > 5																												-- 규모 5 초과
+HAVING tendency > 0																												-- 경향성 0 초과(변경 요)
+   AND scale > 5																												-- 규모 5 초과(변경 요)
