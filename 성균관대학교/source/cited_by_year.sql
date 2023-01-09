@@ -20,9 +20,10 @@ select A01.id
      , COALESCE(SUM(C01.cited_2018), 0) as cited_2018
      , COALESCE(SUM(C01.cited_2019), 0) as cited_2019
      , COALESCE(SUM(C01.cited_2020), 0) as cited_2020
-     , COALESCE(SUM(C01.cited_2021), 0) as cited_2021     
-  from openalex."JAEKYOON_works_temp" A01
-  left join openalex."JAEKYOON_works_referenced_works_temp" B01
+     , COALESCE(SUM(C01.cited_2021), 0) as cited_2021
+     , COALESCE(SUM(C01.cited_2022), 0) as cited_2022
+  from openalex.works A01
+  left join openalex.works_referenced_works B01
     on A01.id = B01.referenced_work_id 
   left join (select id
                   , case when publication_year = '2000' then 1 else 0 end as cited_2000 
@@ -48,16 +49,9 @@ select A01.id
                   , case when publication_year = '2020' then 1 else 0 end as cited_2020
                   , case when publication_year = '2021' then 1 else 0 end as cited_2021
                   , case when publication_year = '2022' then 1 else 0 end as cited_2022
-  			   from openalex."JAEKYOON_works_temp") C01
+  			   from openalex.works) C01
     on B01.work_id = C01.id
  where 1=1
    and A01.id = 'https://openalex.org/W2002900195'
  group by A01.id
   ;
-   
-select *
---id
---     , publication_year
-  from openalex."JAEKYOON_works_temp"
-
-;
