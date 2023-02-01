@@ -36,7 +36,7 @@ def lemmatize(model, words):
 
 
 # -------------------------------------------------------------------------------- NOTEBOOK-CELL: CODE
-df = pd.read_csv('/data/hyeondori/chemical_23years_cut.csv', encoding='utf-8')
+df = pd.read_csv('/data/hyeondori/data/works_lv0_Engineering_python.csv', encoding='utf-8')
 
 df.fillna(' ', inplace = True)
 
@@ -62,22 +62,29 @@ if __name__ == '__main__':
     # lemmatizer
     wlem = nltk.WordNetLemmatizer()
 
-    n = 0
+    n = 258
     i = 0
     loop = 5000
     data = df
 
     while n <= len(data) // loop:
-        result = pd.DataFrame(columns=['works_id', 'works_title', 'works_publication_year', 'works_abstract', 'keyword', 'score'])
+        result = pd.DataFrame(columns=['works_id',
+                                    #    'works_concepts',
+                                       'works_title',
+                                       'works_publication_year',
+                                       'works_abstract',
+                                       'keyword',
+                                       'score'])
         if n != len(data) // loop:
             for i in tqdm(range(loop)):
                 key_results = kw_model.extract_keywords(data['works_abstract'][n * loop + i], keyphrase_ngram_range=(1, 2),
-                                                        use_mmr=True, diversity=0.7)
+                                                        use_mmr=True, diversity=0.6, top_n=5, stop_words='english')
                 for key_result in key_results:
                     keyword, score = key_result
                     keyword = lemmatize(wlem, keyword)
                     
                     result = result.append({'works_id': df.loc[n * loop + i, 'works_id'],
+                                            # 'works_concepts': df.loc[n * loop + i, 'works_concepts'],
                                             'works_title': df.loc[n * loop + i, 'works_title'],
                                             'works_publication_year': df.loc[n * loop + i, 'works_publication_year'],
                                             'works_abstract': df.loc[n * loop + i, 'works_abstract'],
@@ -87,12 +94,13 @@ if __name__ == '__main__':
         else:
             for i in tqdm(range(len(data) % loop)):
                 key_results = kw_model.extract_keywords(df['works_abstract'][n * loop + i], keyphrase_ngram_range=(1, 2),
-                                                        use_mmr=True, diversity=0.7)
+                                                        use_mmr=True, diversity=0.6, top_n=5, stop_words='english')
                 for key_result in key_results:
                     keyword, score = key_result
                     keyword = lemmatize(wlem, keyword)
 
                     result = result.append({'works_id': df.loc[n * loop + i, 'works_id'],
+                                            # 'works_concepts': df.loc[n * loop + i, 'works_concepts'],
                                             'works_title': df.loc[n * loop + i, 'works_title'],
                                             'works_publication_year': df.loc[n * loop + i, 'works_publication_year'],
                                             'works_abstract': df.loc[n * loop + i, 'works_abstract'],
@@ -100,4 +108,4 @@ if __name__ == '__main__':
                                             'score': score},
                                             ignore_index=True)
         n += 1
-        result.to_csv('/data/hyeondori/keybert_result/chemical_keybert_23years_result_{}.csv'.format(n), encoding='utf-8', index=False)
+        result.to_csv('/data/hyeondori/keybert_result/engineering_keybert_result/engineering_keybert_result_{}.csv'.format(n), encoding='utf-8', index=False)
