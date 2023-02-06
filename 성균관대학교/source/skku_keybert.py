@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     while n <= len(data) // loop:
         result = pd.DataFrame(columns=['works_id',
-                                    #    'works_concepts',
+                                       'works_concepts',
                                        'works_title',
                                        'works_publication_year',
                                        'works_abstract',
@@ -84,7 +84,7 @@ if __name__ == '__main__':
                     keyword = lemmatize(wlem, keyword)
                     
                     result = result.append({'works_id': df.loc[n * loop + i, 'works_id'],
-                                            # 'works_concepts': df.loc[n * loop + i, 'works_concepts'],
+                                            'works_concepts': df.loc[n * loop + i, 'works_concepts'],
                                             'works_title': df.loc[n * loop + i, 'works_title'],
                                             'works_publication_year': df.loc[n * loop + i, 'works_publication_year'],
                                             'works_abstract': df.loc[n * loop + i, 'works_abstract'],
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                     keyword = lemmatize(wlem, keyword)
 
                     result = result.append({'works_id': df.loc[n * loop + i, 'works_id'],
-                                            # 'works_concepts': df.loc[n * loop + i, 'works_concepts'],
+                                            'works_concepts': df.loc[n * loop + i, 'works_concepts'],
                                             'works_title': df.loc[n * loop + i, 'works_title'],
                                             'works_publication_year': df.loc[n * loop + i, 'works_publication_year'],
                                             'works_abstract': df.loc[n * loop + i, 'works_abstract'],
